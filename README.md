@@ -44,6 +44,8 @@ Observed: **31 tests passed**. Package installation needs network access; source
 
 ## Documentation
 
+- [Public design system](DESIGN.md): Rahil Design 3.3.0, shared tokens and visual review rules.
+
 - [Scope and acceptance](docs/spec.md): local v1 contract.
 - [Methodology](docs/methodology.md): bridges, backtests and conditional scenarios.
 - [CAMT research](docs/camt.md): AFSI exclusions, thresholds and omitted tax details.
