@@ -15,3 +15,7 @@ Purpose: record the authorized public publication and its verification evidence.
 Financial snapshot: October 21, 2026. Fetch timestamps are retained separately in the provenance inventories; simulated returns end October 20. The $326.77 million net-income MAE remains material. Q3 is preliminary plus model estimates, GAAP tax is separate from AFSI/tentative tax, and scenario frequencies are not index-selection probabilities. No actual liability, tax-return, investment or election-compliance functionality is claimed.
 
 This receipt is a documentation descendant of the verified source commit. The final remote HEAD and its CI run are also checked before handoff; GitHub's [workflow history](https://github.com/RahilBhavan/strategy-fair-value-earnings/actions/workflows/ci.yml) provides the commit-specific record. Scratch verification environments/copies are removed after that check.
+
+## Update 2026-10-22: license
+
+The MIT license was added in `LICENSE`. It covers this project's code only. Earlier statements in this record that no license file existed describe the state at publication.

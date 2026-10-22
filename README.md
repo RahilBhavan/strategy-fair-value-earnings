@@ -71,6 +71,6 @@ The snapshot contains 65 attributed response bodies: SEC filings/XBRL, Coinbase 
 
 ## License
 
-No license file yet. Third-party source documents/data retain their owners' rights.
+[MIT](LICENSE). The license covers this project's code only. Third-party source documents/data retain their owners' rights.
 
 Part of [Rahil Bhavan's projects](https://github.com/RahilBhavan).
