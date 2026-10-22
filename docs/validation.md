@@ -11,7 +11,7 @@ python scripts/render_result.py
 python -m compileall -q fve scripts tests
 ```
 
-Observed: 31 tests passed, all 65 response bodies matched their committed inventory hashes, and all six generated result files reproduced identical hashes on consecutive runs. Exact hashes are in [validation.json](validation.json). The new result-table SVG is generated directly from `results/backtest.json`; its bytes reproduce as well. The six default model hashes remain unchanged from the starting v1. Floating-point byte identity across every Python/NumPy/platform combination is not promised.
+Original publication: 31 tests passed, all 65 response bodies matched their committed inventory hashes, and all six generated result files reproduced identical hashes on consecutive runs. Exact hashes are in [validation.json](validation.json). The new result-table SVG is generated directly from `results/backtest.json`; its bytes reproduce as well. The six default model hashes remain unchanged from the starting v1. Floating-point byte identity across every Python/NumPy/platform combination is not promised.
 
 A fresh scratch copy under `~/scratch/strategy-fair-value-earnings/` contained only tracked/intended source files, with no raw cache, results or repository environment. A separately created venv installed the pinned dependency. Offline restoration, the complete test/demo sequence, compile checks and figure generation passed there. Result hashes and the SVG matched the working tree. Scratch test/build folders are removed after publication verification.
 
@@ -20,3 +20,5 @@ Persistence and negative cases include corruption rejection before archive extra
 The GitHub workflow pins action commits, Python versions (3.12.12 and 3.14.0), pip and NumPy, grants only `contents: read`, and runs restoration, compilation, source verification, tests, repeated demos and figure-drift checks. Dependency setup requires network; financial source tests/demos run offline with no credentials or paid services. This plain Python project has no configured static typechecker; compilation is a syntax check, not a typecheck.
 
 The pre-commit hook rejects staged files above 20,000 bytes (5,000 estimated tokens). It remains enabled and was not bypassed. No code license was selected. See [review](review.md) for financial limitations and [publication](publication.md) for remote verification.
+
+The earnings-diagnostics slice adds eight behavioral/validator tests (39 total) and a seventh deterministic output. See [diagnostic evidence](earnings-diagnostics.md); `scripts/validate.py` now repeats both CLIs and requires exactly the seven outputs, rejecting missing artifacts while ignoring unrelated local files. Existing six output hashes and the SVG are preserved.

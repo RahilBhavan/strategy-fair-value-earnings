@@ -6,17 +6,21 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-DEMOS = [['scripts/run_model.py']]
+DEMOS = [['scripts/run_model.py'], ['scripts/diagnose_earnings.py']]
 
 
 def run(args):
     subprocess.run([sys.executable, *args], cwd=ROOT, check=True)
 
 
+OUTPUTS = ('backtest.json', 'camt.json', 'earnings_diagnostics.json',
+           'pass_probabilities.json', 'quarterly_history.csv', 'summary.json', 'thresholds.json')
+
+
 def hashes():
-    return {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest()
-            for directory in (ROOT / "results", ROOT / "data/derived")
-            if directory.exists() for p in sorted(directory.rglob("*")) if p.is_file()}
+    # Required artifacts only: missing files must fail; unrelated local files are not evidence.
+    return {f'results/{name}': hashlib.sha256((ROOT / 'results' / name).read_bytes()).hexdigest()
+            for name in OUTPUTS}
 
 
 def main():

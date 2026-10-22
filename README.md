@@ -31,7 +31,7 @@ python3 -m venv ~/scratch/strategy-fair-value-earnings/venv
 ~/scratch/strategy-fair-value-earnings/venv/bin/python scripts/render_result.py
 ```
 
-Observed: **31 tests passed**. Package installation needs network access; source restoration/tests/demo are offline and need no credentials. Generated CSV/JSON stay local. A second run reproduces their hashes with the pinned NumPy version and seed. Optional source fetching needs contact-bearing `SEC_USER_AGENT` for EDGAR.
+Observed: **39 tests passed**. Package installation needs network access; source restoration/tests/demo are offline and need no credentials. Generated CSV/JSON stay local. A second run reproduces their hashes with the pinned NumPy version and seed. Optional source fetching needs contact-bearing `SEC_USER_AGENT` for EDGAR.
 
 ## Repository layout
 
@@ -47,6 +47,7 @@ Observed: **31 tests passed**. Package installation needs network access; source
 - [Public design system](DESIGN.md): Rahil Design 3.3.0, shared tokens and visual review rules.
 
 - [Scope and acceptance](docs/spec.md): local v1 contract.
+- [Earnings diagnostics](docs/earnings-diagnostics.md): signed component error bridge, chronological baseline comparisons and a five-minute example. Run `python scripts/diagnose_earnings.py`.
 - [Methodology](docs/methodology.md): bridges, backtests and conditional scenarios.
 - [CAMT research](docs/camt.md): AFSI exclusions, thresholds and omitted tax details.
 - [Sources](docs/sources.md): primary-source checks and cache coverage.
