@@ -1,0 +1,6 @@
+path,url,fetched_utc,sha256,bytes
+data/raw/irs/notice-2025-27.html,https://www.irs.gov/irb/2025-26_IRB,2026-10-22T01:21:54.363415+00:00,9281c980677209228f7e5e0284bc1314ee00c61f43419318d9d0a7b951778afe,245834
+data/raw/irs/notice-2025-49.pdf,https://www.irs.gov/pub/irs-drop/n-25-49.pdf,2026-10-22T01:21:53.353539+00:00,c276aac07efc0554712c4b8f57afd4b359f486c95d290029a8e69f48ba145fe8,301902
+data/raw/irs/notice-2026-7.html,https://www.irs.gov/irb/2026-11_IRB,2026-10-22T01:21:53.621180+00:00,dd6dac10d59f249d43212f2dc9bef63267a8bd24623e3b879573ba2cfd31b5f6,681997
+data/raw/spdji/methodology-sp-us-indices_wayback-20260908.pdf,https://web.archive.org/web/20260908073946id_/https://www.spglobal.com/spdji/en/documents/methodologies/methodology-sp-us-indices.pdf,2026-10-22T00:57:00Z,622e139ddd02070f7b27e14320174c06a3a683bbabf1ac5cb6980364d6c8c6d6,848896
+data/raw/spdji/press-20260604-megacap-consultation-results.html,https://press.spglobal.com/2026-06-04-S-P-Dow-Jones-Indices-Consultation-on-Treatment-of-MegaCap-Companies-Results,2026-10-22T00:56:27Z,6e0e5164b6668b2142f9407a6b04108d9c95863a69c44c47956cc9398d6a3a4b,68604

@@ -1,0 +1,18 @@
+{
+  "financial_as_of": "2026-10-21",
+  "python": "3.14.7",
+  "demo_commands": [
+    [
+      "/home/rahil/scratch/strategy-fair-value-earnings/venv/bin/python",
+      "scripts/run_model.py"
+    ]
+  ],
+  "reproducible_output_files": {
+    "results/backtest.json": "10d582a2d4ea5c1129b04776189f5dc9621684afaab008831bc7b15651127276",
+    "results/camt.json": "d17456408ab8910ae3972dcf35b09beb8fd07332386455716a1d9c1cb3becbb8",
+    "results/pass_probabilities.json": "513663464c9e9804dd3084292f2bd33a10e5f17fdcbe4306c7f384111b8e1333",
+    "results/quarterly_history.csv": "124f1a23312afc81466624c6728d15eea68457b9b0a974c03529be9aa4b1ad35",
+    "results/summary.json": "dcd14af590fd20f39350296a60925833aa88ec5ef65aadd9a912bce918e27f21",
+    "results/thresholds.json": "63f5c8163e18e38f00757aa84d2475be31e3bf20b4b35387c06e3c31a4404fbd"
+  }
+}
