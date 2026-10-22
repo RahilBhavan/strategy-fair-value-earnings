@@ -1,7 +1,8 @@
 """Plain-text access to cached filings and the curated facts that XBRL does not carry.
 
 Each curated fact stores the exact quote it came from; tests assert the quote is present in the cached filing
-and that the value appears in the quote, so a typo in data/curated/text_facts.csv fails loudly."""
+and that its magnitude appears in the quote. A frozen-file hash also detects curated edits;
+signs and table-column interpretation still require source review."""
 import csv
 import html
 import re

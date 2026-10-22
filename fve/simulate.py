@@ -107,14 +107,16 @@ def future_quarter_ends(n):
 
 
 def pass_probabilities(regime, n_paths=20000, n_checkpoints=5, after_pref=False, seed=SEED):
+    if n_paths < 1 or n_checkpoints < 1:
+        raise ValueError("paths and checkpoints must be positive")
     closes = btc.daily_closes()
     st = state()
     cps = sp_rule.checkpoints(date(2026, 10, 21), n_checkpoints)
     needed = [sp_rule.latest_reported_quarter(cp) for cp in cps]
-    fut = [q for q in future_quarter_ends(8) if q <= max(needed)]
+    fut = earnings.xbrl.quarter_ends(date(2026, 12, 31), max(needed))
     p_start = closes[AS_OF]
-    qprices = simulate_quarter_prices(regime, fut, n_paths, seed)
-    ni = quarter_ni(st, qprices)
+    qprices = simulate_quarter_prices(regime, fut, n_paths, seed) if fut else np.empty((n_paths, 0))
+    ni = quarter_ni(st, qprices) if fut else np.empty((n_paths, 0))
     known = dict(st["known_ni"])
     pref = st["pref_assumed"] if after_pref else 0.0
     if after_pref:

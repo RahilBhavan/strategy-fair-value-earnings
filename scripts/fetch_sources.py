@@ -48,14 +48,14 @@ def main(refresh=False):
     sub = json.loads(fetch(SUBMISSIONS, "edgar/submissions_CIK0001050446.json", refresh))
     for accn, form, filed, doc in filing_docs(sub):
         base = f"https://www.sec.gov/Archives/edgar/data/{CIK}/{accn.replace('-', '')}"
-        fetch(f"{base}/{doc}", f"edgar/{accn}/{doc}")
-        idx = json.loads(fetch(f"{base}/index.json", f"edgar/{accn}/index.json"))
+        fetch(f"{base}/{doc}", f"edgar/{accn}/{doc}", refresh)
+        idx = json.loads(fetch(f"{base}/index.json", f"edgar/{accn}/index.json", refresh))
         for item in idx["directory"]["item"]:
             n = item["name"]
             if "ex99" in n.lower() and n.endswith(".htm"):
-                fetch(f"{base}/{n}", f"edgar/{accn}/{n}")
+                fetch(f"{base}/{n}", f"edgar/{accn}/{n}", refresh)
         print(filed, form, accn, doc)
-    btc.fetch_all(date(2026, 10, 20))
+    btc.fetch_all(date(2026, 10, 20), refresh=refresh)
 
 
 if __name__ == "__main__":

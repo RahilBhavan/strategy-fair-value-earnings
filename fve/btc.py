@@ -13,13 +13,13 @@ UA = "RahilBhavan-research (github.com/RahilBhavan)"
 FIRST = date(2015, 7, 21)
 
 
-def fetch_all(through):
+def fetch_all(through, refresh=False):
     """Cache candles in 290-day chunks from FIRST through `through` (inclusive)."""
     s = FIRST
     while s <= through:
         e = min(s + timedelta(days=289), through)
         fetch(API.format(s=s.isoformat(), e=(e + timedelta(days=1)).isoformat()),
-              f"coinbase/btc-usd-daily_{s.isoformat()}_{e.isoformat()}.json", ua=UA)
+              f"coinbase/btc-usd-daily_{s.isoformat()}_{e.isoformat()}.json", refresh=refresh, ua=UA)
         s = e + timedelta(days=1)
 
 

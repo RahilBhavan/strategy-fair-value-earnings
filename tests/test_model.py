@@ -2,6 +2,8 @@ import math
 import re
 import unittest
 from datetime import date
+from decimal import Decimal
+import hashlib
 
 import numpy as np
 
@@ -18,6 +20,14 @@ class ModelTests(unittest.TestCase):
                 quote = re.sub(r'\s+', ' ', row['quote'])
                 self.assertIn(quote, text(row['source']))
                 self.assertTrue(row['url'].startswith('https://www.sec.gov/'))
+                numbers = [Decimal(n.replace(',', '')) for n in
+                           re.findall(r'\d[\d,]*(?:\.\d+)?', quote)]
+                self.assertIn(abs(Decimal(str(row['value']))), numbers)
+
+    def test_frozen_curated_bytes(self):
+        from fve.filings import CURATED
+        self.assertEqual(hashlib.sha256(CURATED.read_bytes()).hexdigest(),
+                         'eb2a2c3038c0899ea97a2bbe6efadd30b3f059ab63f6e2a056805a12dd418505')
 
     def test_reported_screen(self):
         ni = {e: v[0] for e, v in xbrl.quarterly(xbrl.load(), 'NetIncomeLoss').items()
@@ -53,6 +63,20 @@ class ModelTests(unittest.TestCase):
         both = earnings.predict(10, 100, 1000, 15, 90, 1500, 0, .3)
         self.assertAlmostEqual(a.gain + b.gain, both.gain)
         self.assertAlmostEqual(a.tax + b.tax, both.tax)
+
+    def test_sale_at_unchanged_price_has_no_gaap_gain(self):
+        # Sell two of ten BTC at 100; original cost is 50 each.
+        p = earnings.predict(10, 100, 500, 8, 100, 400, 0, .3,
+                             sale_adjustment=200 - 100)
+        self.assertEqual(p.gain, 0)
+        # The simplified GAAP deferred-tax proxy releases 30; CAMT is separate.
+        self.assertEqual(p.tax, -30)
+
+    def test_camt_fsnol_consumed_before_applicability(self):
+        rows = camt.run([camt.Year(2020, -1e9), camt.Year(2021, 1e9)], 'statute_only')
+        self.assertFalse(rows[-1]['applicable'])
+        self.assertEqual(rows[-1]['fsnol_used'], .8e9)
+        self.assertEqual(rows[-1]['fsnol_after'], .2e9)
 
     def test_below_cost_no_assumed_benefit(self):
         p = earnings.predict(10, 80, 1000, 10, 60, 1000, 0, .3)
@@ -94,6 +118,24 @@ class ModelTests(unittest.TestCase):
         self.assertEqual(out, again)
         self.assertTrue(all(0 <= r['p_pass'] <= 1 for r in out['checkpoints']))
         self.assertTrue(out['checkpoints'][0]['deterministic'])
+
+    def test_single_checkpoint_needs_no_future_prices(self):
+        out = simulate.pass_probabilities('demeaned', n_paths=2, n_checkpoints=1)
+        self.assertEqual(out['quarter_end_price_pctiles'], {})
+        self.assertEqual(out['checkpoints'][0]['latest_quarter'], date(2026, 9, 30))
+        self.assertTrue(out['checkpoints'][0]['deterministic'])
+        self.assertEqual(out['checkpoints'][0]['p_pass'], 0)
+
+    def test_invalid_checkpoint_request(self):
+        for paths, checkpoints in ((0, 1), (2, 0), (2, -1)):
+            with self.assertRaises(ValueError):
+                simulate.pass_probabilities('demeaned', n_paths=paths, n_checkpoints=checkpoints)
+
+    def test_long_horizon_uses_latest_four_quarters(self):
+        out = simulate.pass_probabilities('demeaned', n_paths=2, n_checkpoints=10)
+        for row in out['checkpoints']:
+            self.assertEqual(row['window'][-1], row['latest_quarter'])
+            self.assertEqual(len(row['window']), 4)
 
     def test_camt_fvi_exclusion(self):
         y = camt.Year(2025, 10e9, 12e9, 1e9)
