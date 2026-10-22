@@ -1,5 +1,7 @@
 # Strategy fair-value earnings: bridge BTC accounting to an earnings eligibility screen
 
+[![Offline verification](https://github.com/RahilBhavan/strategy-fair-value-earnings/actions/workflows/ci.yml/badge.svg)](https://github.com/RahilBhavan/strategy-fair-value-earnings/actions/workflows/ci.yml)
+
 ![The six reported-quarter backtest has $326.77m mean absolute net-income error; asset-gain reconciliation does not establish net-income accuracy.](docs/assets/backtest.svg)
 
 A local Python model that rebuilds Strategy's BTC fair-value earnings bridge and tests the latest-quarter/trailing-four-quarter earnings condition used by S&P. Seeded scenarios estimate conditional frequencies of passing that screen. They do not estimate index selection probability. Financial cutoff: October 21, 2026; market candles end October 20.
