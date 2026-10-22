@@ -131,15 +131,36 @@ def pass_probabilities(regime, n_paths=20000, n_checkpoints=5, after_pref=False,
             cols.append(np.full(n_paths, known[e]) if e in known else ni[:, fut.index(e)])
         m = np.stack(cols, axis=1)
         ok = (m[:, -1] > 0) & (m.sum(axis=1) > 0)
+        deterministic = all(e in known for e in window)
         rows.append({"checkpoint": cp, "latest_quarter": latest, "window": window,
                      "p_pass": float(ok.mean()), "p_latest_positive": float((m[:, -1] > 0).mean()),
                      "p_trailing_positive": float((m.sum(axis=1) > 0).mean()),
-                     "deterministic": all(e in known for e in window)})
+                     "deterministic": deterministic,
+                     "reason": checkpoint_reason(cp, window, known, deterministic, n_paths, after_pref)})
     q_summary = {str(q): {"p10": float(np.percentile(qprices[:, i], 10)),
                           "p50": float(np.percentile(qprices[:, i], 50)),
                           "p90": float(np.percentile(qprices[:, i], 90))} for i, q in enumerate(fut)}
     return {"regime": regime, "n_paths": n_paths, "seed": seed, "start_price": p_start, "as_of": AS_OF,
             "after_pref": after_pref, "checkpoints": rows, "quarter_end_price_pctiles": q_summary}
+
+
+def _bn(v):
+    return f"{'+' if v > 0 else '-'}${abs(v) / 1e9:,.2f}bn"
+
+
+def checkpoint_reason(cp, window, known, deterministic, n_paths, after_pref):
+    """Plain-language reason for one checkpoint's pass frequency."""
+    basis = "net income after preferred dividends" if after_pref else "GAAP net income"
+    head = (f"{cp} is an assumed quarterly S&P rebalance date (third Friday of Mar/Jun/Sep/Dec); "
+            f"the latest quarter assumed filed by then is {window[-1]}. ")
+    if not deterministic:
+        return head + (f"Share of {n_paths:,} simulated BTC paths where {basis} is positive for {window[-1]} "
+                       f"and for the four quarters {window[0]}..{window[-1]}.")
+    last, total = known[window[-1]], sum(known[e] for e in window)
+    verdict = sp_rule.financial_viability([known[e] for e in window])
+    return head + (f"No simulated price enters this window, so the result is fixed: {basis} is {_bn(last)} "
+                   f"for {window[-1]} (Q3 2026 is a preliminary-estimate model, not reported) and {_bn(total)} "
+                   f"for the four quarters {window[0]}..{window[-1]}; {verdict.reason}.")
 
 
 def _bisect(f, lo, hi, tol=1.0):
@@ -165,13 +186,22 @@ def next_quarter_thresholds(after_pref=False):
         return float(quarter_ni(st, np.array([p]))[0]) - pref
     latest = _bisect(lambda p: q4(p) > 0, 1_000, 1_000_000)
     trailing = _bisect(lambda p: prior3 + q4(p) > 0, 1_000, 1_000_000)
+    pass_above = max(latest, trailing)
+    quarter = date(2026, 12, 31)
+    checkpoint = next(cp for cp in sp_rule.checkpoints(date(2026, 10, 21), 4)
+                      if sp_rule.latest_reported_quarter(cp) == quarter)
     return {"latest_quarter_positive_above": latest, "trailing_four_positive_above": trailing,
-            "pass_above": max(latest, trailing), "prior_three_quarters_sum": prior3,
-            "prior_three_quarters": sorted(known)[-3:], "after_pref": after_pref}
+            "pass_above": pass_above, "prior_three_quarters_sum": prior3,
+            "prior_three_quarters": sorted(known)[-3:], "after_pref": after_pref,
+            "quarter": quarter, "checkpoint": checkpoint,
+            "earnings_basis": ("net income after preferred dividends (latest known quarterly burden held fixed)"
+                               if after_pref else "GAAP net income (NetIncomeLoss), before preferred dividends"),
+            "price_basis": "Coinbase BTC-USD daily close (UTC) on 2026-12-31",
+            "ni_change_per_usd_of_btc_price": q4(pass_above + 1) - q4(pass_above)}
 
 
 def june_2027_grid(dec_prices=(60_000, 70_000, 80_000, 90_000, 100_000, 120_000)):
-    """For a given 2026-12-31 price, the 2027-03-31 price needed to pass at the June 2027 checkpoint."""
+    """{2026-12-31 close: 2027-03-31 close needed} for the June 2027 checkpoint to pass (before preferred)."""
     st = state()
     known = st["known_ni"]
     q2, q3 = known[date(2026, 6, 30)], known[date(2026, 9, 30)]

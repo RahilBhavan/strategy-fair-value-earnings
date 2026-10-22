@@ -164,9 +164,20 @@ def main():
     probs = {f"{reg}{'_after_pref' if ap else ''}": simulate.pass_probabilities(reg, after_pref=ap)
              for reg in ("demeaned", "raw", "recent") for ap in (False, True)}
     dump("pass_probabilities.json", probs)
+    bt_mae = bt["coinbase"]["mean_abs_ni_error"]
     thr = {"net_income": simulate.next_quarter_thresholds(),
-           "net_income_after_preferred": simulate.next_quarter_thresholds(after_pref=True),
-           "june_2027_march_price_needed_given_december": simulate.june_2027_grid()}
+           "net_income_after_preferred": simulate.next_quarter_thresholds(after_pref=True)}
+    for t in thr.values():
+        t["model_mae_btc_price_equivalent"] = bt_mae / t["ni_change_per_usd_of_btc_price"]
+    thr["model_error"] = {
+        "mean_abs_ni_error_usd": bt_mae, "max_abs_ni_error_usd": bt["coinbase"]["max_abs_ni_error"],
+        "quarters_scored": bt["coinbase"]["n_quarters_scored"], "source": "results/backtest.json (coinbase)",
+        "note": "Coinbase-price net-income model vs reported GAAP net income; thresholds inherit this error"}
+    thr["march_2027_close_needed_for_june_2027_checkpoint"] = {
+        "description": ("Key: BTC close on 2026-12-31. Value: BTC close on 2027-03-31 needed for Q1 2027 and "
+                        "the four quarters Q2 2026..Q1 2027 to be positive on GAAP net income before "
+                        "preferred dividends (June 2027 checkpoint)."),
+        "by_december_31_2026_close": simulate.june_2027_grid()}
     dump("thresholds.json", thr)
     cm = camt_results()
     st = simulate.state()
@@ -186,6 +197,8 @@ def main():
         "backtest_mean_abs_ni_error_coinbase": bt["coinbase"]["mean_abs_ni_error"],
         "backtest_max_abs_ni_error_coinbase": bt["coinbase"]["max_abs_ni_error"],
         "pass_probability_base": {str(r["checkpoint"]): r["p_pass"] for r in probs["demeaned"]["checkpoints"]},
+        "pass_probability_base_reason": {str(r["checkpoint"]): r["reason"]
+                                         for r in probs["demeaned"]["checkpoints"]},
         "next_quarter_pass_above": thr["net_income"]["pass_above"],
         "camt_history_applicable_any": {k: any(r["applicable"] for r in v) for k, v in cm["history"].items()},
     }

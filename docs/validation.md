@@ -22,3 +22,16 @@ The GitHub workflow pins action commits, Python versions (3.12.12 and 3.14.0), p
 The pre-commit hook rejects staged files above 20,000 bytes (5,000 estimated tokens). It remains enabled and was not bypassed. No code license was selected. See [review](review.md) for financial limitations and [publication](publication.md) for remote verification.
 
 The earnings-diagnostics slice adds eight behavioral/validator tests (39 total) and a seventh deterministic output. See [diagnostic evidence](earnings-diagnostics.md); `scripts/validate.py` now repeats both CLIs and requires exactly the seven outputs, rejecting missing artifacts while ignoring unrelated local files. Existing six output hashes and the SVG are preserved.
+
+## Reader-test fixes (2026-10-22)
+
+Three added tests (42 total) check checkpoint `reason` text for fixed and simulated
+rebalance dates, threshold metadata (quarter, checkpoint, earnings basis, net-income
+sensitivity per dollar of BTC) and that the README threshold lines equal those
+rendered from `results/`. CI now also fails if `render_result.py` changes README.md.
+Output hashes in [validation.json](validation.json) changed deliberately:
+`pass_probabilities.json` gained `reason`, `summary.json` gained
+`pass_probability_base_reason`, and `thresholds.json` gained basis/error fields and
+renamed `june_2027_march_price_needed_given_december` to
+`march_2027_close_needed_for_june_2027_checkpoint` (no consumer used the old key, so
+no alias). All numeric values and the SVG are unchanged.

@@ -1,9 +1,52 @@
-"""Generate a result table from the actual reported-quarter backtest, without plotting dependencies."""
+"""Generate the backtest figure and the README threshold block from results/, without plotting dependencies."""
 import json
 from html import escape
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+START, END = '<!-- generated:thresholds start -->', '<!-- generated:thresholds end -->'
+
+
+def usd(v, digits=0):
+    return f"{'-' if v < 0 else ''}${abs(v):,.{digits}f}"
+
+
+def threshold_block():
+    """README lines built only from results/thresholds.json and results/summary.json."""
+    thr = json.loads((ROOT / 'results/thresholds.json').read_text())
+    summary = json.loads((ROOT / 'results/summary.json').read_text())
+    pre, post, err = thr['net_income'], thr['net_income_after_preferred'], thr['model_error']
+    per_usd = pre['ni_change_per_usd_of_btc_price']
+    lines = [
+        f"- **Next pass price:** a {pre['price_basis']} above **{usd(pre['pass_above'])}** makes "
+        f"Q4 2026 ({pre['quarter']}) and the four quarters ending then positive on GAAP net income, "
+        f"so the modelled screen passes at the {pre['checkpoint']} checkpoint. After preferred dividends "
+        f"the price is **{usd(post['pass_above'])}**. Q4 alone turns positive above {usd(pre['latest_quarter_positive_above'])}; "
+        f"the trailing-four sum binds because Q1–Q3 2026 sum to {usd(pre['prior_three_quarters_sum'] / 1e6)}m "
+        f"(Q3 is a preliminary-estimate model) (`results/thresholds.json`).",
+        f"- **Model error:** the price model missed reported net income by {usd(err['mean_abs_ni_error_usd'] / 1e6, 2)}m on average "
+        f"(max {usd(err['max_abs_ni_error_usd'] / 1e6, 2)}m) over {err['quarters_scored']} quarters. Near the threshold, "
+        f"net income moves about {usd(per_usd / 1e3)}k per $1 of BTC price, so the mean error equals about "
+        f"{usd(pre['model_mae_btc_price_equivalent'])} and the max about "
+        f"{usd(err['max_abs_ni_error_usd'] / per_usd)} of BTC price. Treat closes within that band as undecided.",
+    ]
+    probs = summary['pass_probability_base']
+    first = next(iter(probs))
+    lines.append(
+        f"- **`pass_probability_base`** keys are assumed quarterly rebalance dates (third Friday of March, June, "
+        f"September and December), not announced dates. {first} is {probs[first]} because no simulated price "
+        f"enters its window: Q3 2026 is modelled positive, but the four quarters ending September 30, 2026 sum to "
+        f"{usd(summary['trailing_four_at_q3_2026'] / 1e9, 2)}bn. `pass_probability_base_reason` in "
+        f"`results/summary.json` states this for every date.")
+    return '\n'.join([START, *lines, END])
+
+
+def update_readme():
+    path = ROOT / 'README.md'
+    text = path.read_text()
+    head, rest = text.split(START, 1)
+    tail = rest.split(END, 1)[1]
+    path.write_text(head + threshold_block() + tail)
 
 
 def main():
@@ -43,6 +86,8 @@ def main():
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text('\n'.join(parts) + '\n')
     print(out.relative_to(ROOT))
+    update_readme()
+    print('README.md threshold block')
 
 
 if __name__ == '__main__':

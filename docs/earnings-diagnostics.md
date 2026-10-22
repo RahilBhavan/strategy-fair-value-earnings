@@ -11,9 +11,9 @@ and is excluded from every score.
 With the README's pinned environment installed, from the repository:
 
 ```bash
-~/scratch/strategy-fair-value-earnings/venv/bin/python scripts/snapshot.py
-~/scratch/strategy-fair-value-earnings/venv/bin/python scripts/diagnose_earnings.py
-~/scratch/strategy-fair-value-earnings/venv/bin/python -m unittest discover -s tests -p test_diagnostics.py -v
+.venv/bin/python scripts/snapshot.py
+.venv/bin/python scripts/diagnose_earnings.py
+.venv/bin/python -m unittest discover -s tests -p test_diagnostics.py -v
 ```
 
 The CLI prints the comparisons and writes `results/earnings_diagnostics.json`.

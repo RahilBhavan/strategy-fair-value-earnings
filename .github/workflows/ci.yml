@@ -27,7 +27,7 @@ jobs:
         run: python -m compileall -q fve scripts tests
       - name: Test source integrity, behavior and deterministic demo
         run: python scripts/validate.py
-      - name: Verify generated result figure
+      - name: Verify generated result figure and README thresholds
         run: |
           python scripts/render_result.py
-          git diff --exit-code -- docs/assets/backtest.svg
+          git diff --exit-code -- docs/assets/backtest.svg README.md
