@@ -35,3 +35,11 @@ Output hashes in [validation.json](validation.json) changed deliberately:
 renamed `june_2027_march_price_needed_given_december` to
 `march_2027_close_needed_for_june_2027_checkpoint` (no consumer used the old key, so
 no alias). All numeric values and the SVG are unchanged.
+
+## Error explanation (2026-10-22)
+
+One added test (43 total) pins the README's account of the $326.77m mean error:
+Q1 and Q2 2026 carry over 73% of absolute error, the filing-price backtest error is
+$121.28m, and the Q1 2026 tax error equals the modelled bitcoin tax reversal less the
+reported December 31, 2025 net deferred tax liability within $5m. No model code,
+source, output hash or SVG changed.
