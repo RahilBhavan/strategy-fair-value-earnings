@@ -30,7 +30,7 @@ def main():
     if first != hashes():
         raise RuntimeError("demo output hashes changed between identical runs")
     evidence = {"financial_as_of": "2026-10-21", "python": sys.version.split()[0],
-                "demo_commands": [[sys.executable, *d] for d in DEMOS],
+                "demo_commands": [["python", *d] for d in DEMOS],
                 "reproducible_output_files": first}
     (ROOT / "docs/validation.json").write_text(json.dumps(evidence, indent=2) + "\n")
     print(f"Reproduced {len(first)} output file hashes")

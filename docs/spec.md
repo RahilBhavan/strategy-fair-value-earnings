@@ -11,6 +11,6 @@ Acceptance:
 3. Sources include URLs, as-of dates and content hashes; current/niche claims checked against primary websites.
 4. Observed, preliminary, fitted and assumed quantities are distinguished in outputs/documentation.
 5. Exact commands, test counts and limitations appear in README; no license is chosen.
-6. Commit locally only, each staged file <=20,000 bytes (5,000 estimated tokens). No external writes or recurring automation.
+6. Each staged file is <=20,000 bytes (5,000 estimated tokens). The later explicit publication instruction authorizes a public RahilBhavan repository and GitHub Actions; no recurring automation or web deployment. Preserve the local v1 history.
 
-CLI-only v1. Existing figures are not a verified deliverable and will be excluded from the local commit. Frozen raw caches are preserved in compressed 18,000-byte archive parts, with offline restoration and per-source hash inventories. Generated results remain local and rebuild from those sources.
+CLI-only v1. Older partial figures are excluded. A generated backtest result table is included under docs/assets/. Frozen raw caches are preserved in compressed 18,000-byte archive parts, with offline restoration and per-source hash inventories. Generated results remain local and rebuild from those sources.

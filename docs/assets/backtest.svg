@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="650" viewBox="0 0 960 650" role="img" aria-labelledby="title desc">
+<title id="title">Net-income error averages $326.77 million</title>
+<desc id="desc">Six reported quarters, Q1 2025 to Q2 2026. Coinbase-price model versus reported GAAP net income. Q3 preliminary estimates are excluded.</desc>
+<rect width="960" height="650" fill="#F5F5EF"/>
+<g font-family="IBM Plex Sans, Liberation Sans, sans-serif" fill="#111214">
+<text x="40" y="48" font-size="20" text-anchor="start" fill="#52545A" font-weight="400">BUILD NOTES / RAHIL BHAVAN</text>
+<text x="40" y="104" font-size="40" text-anchor="start" fill="#111214" font-weight="600">Net-income error averages $326.77m</text>
+<text x="40" y="146" font-size="26" text-anchor="start" fill="#111214" font-weight="400">Coinbase-price model vs reported GAAP earnings</text>
+<text x="40" y="184" font-size="23" text-anchor="start" fill="#52545A" font-weight="400">Six quarters · USD millions · model minus reported</text>
+<text x="40" y="240" font-size="24" text-anchor="start" fill="#52545A" font-weight="400">Quarter</text>
+<text x="440" y="240" font-size="24" text-anchor="end" fill="#52545A" font-weight="400">Reported</text>
+<text x="660" y="240" font-size="24" text-anchor="end" fill="#52545A" font-weight="400">Model</text>
+<text x="916" y="240" font-size="24" text-anchor="end" fill="#52545A" font-weight="400">Error</text>
+<path d="M40 258 H920" stroke="#C6C7BF"/>
+<text x="40" y="300" font-size="26" text-anchor="start" fill="#111214" font-weight="400">2025-03-31</text>
+<text x="440" y="300" font-size="26" text-anchor="end" fill="#111214" font-weight="400">-4,217.37</text>
+<text x="660" y="300" font-size="26" text-anchor="end" fill="#111214" font-weight="400">-4,192.52</text>
+<text x="916" y="300" font-size="26" text-anchor="end" fill="#111214" font-weight="400">+24.85</text>
+<text x="40" y="342" font-size="26" text-anchor="start" fill="#111214" font-weight="400">2025-06-30</text>
+<text x="440" y="342" font-size="26" text-anchor="end" fill="#111214" font-weight="400">+10,020.85</text>
+<text x="660" y="342" font-size="26" text-anchor="end" fill="#111214" font-weight="400">+9,697.58</text>
+<text x="916" y="342" font-size="26" text-anchor="end" fill="#111214" font-weight="400">-323.27</text>
+<text x="40" y="384" font-size="26" text-anchor="start" fill="#111214" font-weight="400">2025-09-30</text>
+<text x="440" y="384" font-size="26" text-anchor="end" fill="#111214" font-weight="400">+2,785.02</text>
+<text x="660" y="384" font-size="26" text-anchor="end" fill="#111214" font-weight="400">+2,838.97</text>
+<text x="916" y="384" font-size="26" text-anchor="end" fill="#111214" font-weight="400">+53.95</text>
+<text x="40" y="426" font-size="26" text-anchor="start" fill="#111214" font-weight="400">2025-12-31</text>
+<text x="440" y="426" font-size="26" text-anchor="end" fill="#111214" font-weight="400">-12,436.65</text>
+<text x="660" y="426" font-size="26" text-anchor="end" fill="#111214" font-weight="400">-12,323.72</text>
+<text x="916" y="426" font-size="26" text-anchor="end" fill="#111214" font-weight="400">+112.94</text>
+<text x="40" y="468" font-size="26" text-anchor="start" fill="#111214" font-weight="400">2026-03-31</text>
+<text x="440" y="468" font-size="26" text-anchor="end" fill="#111214" font-weight="400">-12,542.67</text>
+<text x="660" y="468" font-size="26" text-anchor="end" fill="#111214" font-weight="400">-11,717.93</text>
+<text x="916" y="468" font-size="26" text-anchor="end" fill="#111214" font-weight="400">+824.74</text>
+<text x="40" y="510" font-size="26" text-anchor="start" fill="#111214" font-weight="400">2026-06-30</text>
+<text x="440" y="510" font-size="26" text-anchor="end" fill="#111214" font-weight="400">-8,219.63</text>
+<text x="660" y="510" font-size="26" text-anchor="end" fill="#111214" font-weight="400">-8,840.50</text>
+<text x="916" y="510" font-size="26" text-anchor="end" fill="#111214" font-weight="400">-620.87</text>
+<path d="M40 532 H920" stroke="#C6C7BF"/>
+<text x="40" y="570" font-size="25" text-anchor="start" fill="#111214" font-weight="600">Reconciled asset gains do not establish net-income accuracy.</text>
+<text x="40" y="605" font-size="22" text-anchor="start" fill="#52545A" font-weight="400">Source: results/backtest.json · frozen 2026-10-21</text>
+<text x="40" y="633" font-size="20" text-anchor="start" fill="#52545A" font-weight="400">Preliminary Q3 2026 is excluded. Research; no selection-probability claim.</text>
+</g></svg>

@@ -1,15 +1,22 @@
-# Local validation evidence
+# Validation evidence
 
-Validated the continuation on Python 3.14.7, financial cutoff 2026-10-21. No external account writes.
+Purpose: document reproducible checks for the October 21, 2026 financial snapshot. Publication review ran locally with Python 3.14.7 and NumPy 2.3.4.
+
+From a clean checkout, install `requirements.txt`, then run:
 
 ```bash
-~/scratch/strategy-fair-value-earnings/venv/bin/python scripts/validate.py
+python scripts/snapshot.py
+python scripts/validate.py
+python scripts/render_result.py
+python -m compileall -q fve scripts tests
 ```
 
-This runs the source verifier, unittest suite and each README demo twice. Observed: 20 tests passed; 65 source bodies matched the committed SHA-256 inventory; 6 generated files had identical hashes on consecutive runs. Exact output hashes and invoked demo commands are in [validation.json](validation.json). Floating-point model outputs are tied to the documented Python/NumPy environment, not a cross-platform byte-identity guarantee.
+Observed: 31 tests passed, all 65 response bodies matched their committed inventory hashes, and all six generated result files reproduced identical hashes on consecutive runs. Exact hashes are in [validation.json](validation.json). The new result-table SVG is generated directly from `results/backtest.json`; its bytes reproduce as well. The six default model hashes remain unchanged from the starting v1. Floating-point byte identity across every Python/NumPy/platform combination is not promised.
 
-Cold-restore check: copied only the files eligible for the local commit into a new directory under `~/scratch/strategy-fair-value-earnings/cold-check`, with no raw cache, generated results or installed repo environment. Restored `snapshot/` offline, ran all tests/demos and compared generated hashes with the working repo. The hashes matched. The earnings check used the documented pinned dependency environment under `~/scratch/strategy-fair-value-earnings/venv`. Scratch copies were removed after validation.
+A fresh scratch copy under `~/scratch/strategy-fair-value-earnings/` contained only tracked/intended source files, with no raw cache, results or repository environment. A separately created venv installed the pinned dependency. Offline restoration, the complete test/demo sequence, compile checks and figure generation passed there. Result hashes and the SVG matched the working tree. Scratch test/build folders are removed after publication verification.
 
-Real-source behavior, negative inputs and domain invariants are exercised in `tests/`. A passing suite does not resolve the financial/model limitations in the README. Relative documentation links, whitespace and staged-file sizes were checked before committing. The local pre-commit hook checks index sizes and rejects any staged file above 20,000 bytes (5,000 estimated tokens); it was enabled and not bypassed.
+Persistence and negative cases include corruption rejection before archive extraction, three real restore attempts repairing a modified curated file, a network timeout preserving an existing cached response followed by a cache retry, propagation of refresh to every SEC/candle request, missing and nonfinite earnings, exact-zero positivity boundaries, CAMT duplicate/nonfinite years, invalid bootstrap requests, deterministic checkpoints and longer forecast horizons. These are concrete tested cases, not a general crash-atomicity guarantee for the optional fetcher's multiple file writes.
 
-No charts or existing partial figures are part of the validated deliverable. No license was selected. Generated outputs remain available locally and are recreated by the README commands.
+The GitHub workflow pins action commits, Python versions (3.12.12 and 3.14.0), pip and NumPy, grants only `contents: read`, and runs restoration, compilation, source verification, tests, repeated demos and figure-drift checks. Dependency setup requires network; financial source tests/demos run offline with no credentials or paid services. This plain Python project has no configured static typechecker; compilation is a syntax check, not a typecheck.
+
+The pre-commit hook rejects staged files above 20,000 bytes (5,000 estimated tokens). It remains enabled and was not bypassed. No code license was selected. See [review](review.md) for financial limitations and [publication](publication.md) for remote verification.

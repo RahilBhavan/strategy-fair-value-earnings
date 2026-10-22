@@ -1,5 +1,7 @@
 # Strategy fair-value earnings: bridge BTC accounting to an earnings eligibility screen
 
+![The six reported-quarter backtest has $326.77m mean absolute net-income error; asset-gain reconciliation does not establish net-income accuracy.](docs/assets/backtest.svg)
+
 A local Python model that rebuilds Strategy's BTC fair-value earnings bridge and tests the latest-quarter/trailing-four-quarter earnings condition used by S&P. Seeded scenarios estimate conditional frequencies of passing that screen. They do not estimate index selection probability. Financial cutoff: October 21, 2026; market candles end October 20.
 
 ## Results
@@ -24,9 +26,10 @@ python3 -m venv ~/scratch/strategy-fair-value-earnings/venv
 ~/scratch/strategy-fair-value-earnings/venv/bin/python scripts/verify_sources.py
 ~/scratch/strategy-fair-value-earnings/venv/bin/python -m unittest discover -s tests -v
 ~/scratch/strategy-fair-value-earnings/venv/bin/python scripts/run_model.py
+~/scratch/strategy-fair-value-earnings/venv/bin/python scripts/render_result.py
 ```
 
-Observed: **20 tests passed**. Package installation needs network access; source restoration/tests/demo are offline and need no credentials. Generated CSV/JSON stay local. A second run reproduces their hashes with the pinned NumPy version and seed. Optional source fetching needs contact-bearing `SEC_USER_AGENT` for EDGAR.
+Observed: **31 tests passed**. Package installation needs network access; source restoration/tests/demo are offline and need no credentials. Generated CSV/JSON stay local. A second run reproduces their hashes with the pinned NumPy version and seed. Optional source fetching needs contact-bearing `SEC_USER_AGENT` for EDGAR.
 
 ## Repository layout
 
@@ -44,6 +47,8 @@ Observed: **20 tests passed**. Package installation needs network access; source
 - [CAMT research](docs/camt.md): AFSI exclusions, thresholds and omitted tax details.
 - [Sources](docs/sources.md): primary-source checks and cache coverage.
 - [Validation](docs/validation.md): exact checks and reproducibility.
+- [Review](docs/review.md): proven fixes and source interpretation.
+- [Publication](docs/publication.md): publication verification receipt.
 
 ## Sources
 
@@ -55,7 +60,9 @@ The snapshot contains 65 attributed response bodies: SEC filings/XBRL, Coinbase 
 - Only an earnings condition is modeled; other eligibility criteria and committee selection are excluded.
 - Scenario frequencies depend on fixed holdings/cost, no future sales, assumed other income, tax proxy and return regime. No calibrated future-probability claim.
 - AFSI is not GAAP earnings. Current guidance permits qualifying FVI exclusions subject to requirements. Simplified `camt` keys assume zero regular tax/credits and mean tentative-tax sensitivity, not actual liability or tax on every unrealized gain.
-- Existing figures are excluded from this CLI deliverable.
+- The result table is generated from the backtest. Older partial figures are excluded.
+- Optional source refresh is a new sample: it does not update curated facts or IRS guidance, and will fail the frozen-source checks. Keep it separate from reproduction.
+- The October 28 daily-dividend proposal was pending at the snapshot; this model does not assume enactment.
 
 ## License
 
