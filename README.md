@@ -1,23 +1,53 @@
 # Strategy fair-value earnings: bridge BTC accounting to an earnings eligibility screen
 
+Strategy lost money in its latest reported quarters, so it fails the S&P 500's profit test; this model estimates the bitcoin price that would change that.
+
 [![Offline verification](https://github.com/RahilBhavan/strategy-fair-value-earnings/actions/workflows/ci.yml/badge.svg)](https://github.com/RahilBhavan/strategy-fair-value-earnings/actions/workflows/ci.yml)
 
-![The six reported-quarter backtest has $326.77m mean absolute net-income error; asset-gain reconciliation does not establish net-income accuracy.](docs/assets/backtest.svg)
-
-A local Python model that rebuilds Strategy's BTC fair-value earnings bridge and tests the latest-quarter/trailing-four-quarter earnings condition used by S&P. Seeded scenarios estimate conditional frequencies of passing that screen. They do not estimate index selection probability. Financial cutoff: October 21, 2026; market candles end October 20.
+A local Python model of Strategy's earnings under bitcoin fair-value accounting. It applies the S&P earnings screen to reported quarters, finds the year-end BTC price that would pass it, and runs seeded BTC price scenarios. It measures its own error against six reported quarters. Financial cutoff: October 21, 2026; market candles end October 20.
 
 ## Results
 
-- Latest reported quarter, June 30, 2026: net loss **$8,219,628,000**; trailing-four net loss **$30,413,926,000**. Both fail the earnings screen (`results/summary.json`).
-- Filing-price asset-gain bridges reconcile six reported fair-value quarters after including sourced Q2 sale proceeds/cost removed. The broader Coinbase-price net-income model has **$326.77 million mean absolute error**; this remains material (`results/backtest.json`).
+### S&P 500 earnings screen
+
+- **What it checks.** The [S&P U.S. Indices Methodology](https://www.spglobal.com/spdji/en/documents/methodologies/methodology-sp-us-indices.pdf) (July 2026, p. 9; [archived copy](https://web.archive.org/web/20260908073946/https://www.spglobal.com/spdji/en/documents/methodologies/methodology-sp-us-indices.pdf), read 2026-10-22) requires that "Generally Accepted Accounting Principles (GAAP) net income from continuing operations must be positive for: the most recent quarter, and the sum of the most recent four consecutive quarters". `fve/sp_rule.py` encodes that rule. Zero is not positive.
+- **Result.** Strategy fails both halves. Latest reported quarter, June 30, 2026: net loss **$8,219,628,000**. Trailing four quarters: net loss **$30,413,926,000** (`results/summary.json`, from Strategy's [June 2026 10-Q](https://www.sec.gov/Archives/edgar/data/1050446/000105044626000044/mstr-20260630.htm), filed 2026-08-03).
+- **Which earnings line.** The 10-Q reports "Net (loss) income" (Q2: -$8,219,628 thousand) before "Dividends on preferred stock" ($400,661 thousand). The methodology does not say which line counts, so the model uses "Net (loss) income" and reports after-preferred figures as a sensitivity. S&P's [Index Mathematics Methodology](https://web.archive.org/web/20261001061252/https://www.spglobal.com/spdji/en/documents/methodologies/methodology-index-math.pdf) (September 2026, p. 72) subtracts "Preferred Dividend and Other Adjustments" for its EPS data, but that is not the eligibility rule.
+
+### Next pass price
+
 <!-- generated:thresholds start -->
 - **Next pass price:** a Coinbase BTC-USD daily close (UTC) on 2026-12-31 above **$86,459** makes Q4 2026 (2026-12-31) and the four quarters ending then positive on GAAP net income, so the modelled screen passes at the 2027-03-19 checkpoint. After preferred dividends the price is **$88,826**. Q4 alone turns positive above $83,570; the trailing-four sum binds because Q1–Q3 2026 sum to -$1,747m (Q3 is a preliminary-estimate model) (`results/thresholds.json`).
 - **Model error:** the price model missed reported net income by $326.77m on average (max $824.74m) over 6 quarters. Near the threshold, net income moves about $605k per $1 of BTC price, so the mean error equals about $540 and the max about $1,364 of BTC price. Treat closes within that band as undecided.
 - **`pass_probability_base`** keys are assumed quarterly rebalance dates (third Friday of March, June, September and December), not announced dates. 2026-12-18 is 0.0 because no simulated price enters its window: Q3 2026 is modelled positive, but the four quarters ending September 30, 2026 sum to -$14.18bn. `pass_probability_base_reason` in `results/summary.json` states this for every date.
 <!-- generated:thresholds end -->
-- **Earnings basis:** the [S&P U.S. Indices Methodology](https://www.spglobal.com/spdji/en/documents/methodologies/methodology-sp-us-indices.pdf) (July 2026, p. 9; [archived copy](https://web.archive.org/web/20260908073946/https://www.spglobal.com/spdji/en/documents/methodologies/methodology-sp-us-indices.pdf), read 2026-10-22) requires that "Generally Accepted Accounting Principles (GAAP) net income from continuing operations must be positive for: the most recent quarter, and the sum of the most recent four consecutive quarters". It does not define the term or mention preferred dividends, so it does not settle the basis. Strategy's [June 2026 10-Q](https://www.sec.gov/Archives/edgar/data/1050446/000105044626000044/mstr-20260630.htm) (filed 2026-08-03) reports "Net (loss) income" (Q2: -$8,219,628 thousand) before "Dividends on preferred stock" ($400,661 thousand) and a separate "Net (loss) income attributable to common stockholders of Strategy". The model headlines the "Net (loss) income" line as the literal match and reports after-preferred figures as a sensitivity; S&P has not confirmed either reading. S&P's [Index Mathematics Methodology](https://web.archive.org/web/20261001061252/https://www.spglobal.com/spdji/en/documents/methodologies/methodology-index-math.pdf) (September 2026, p. 72) subtracts "Preferred Dividend and Other Adjustments" for its EPS data points, but that is not the eligibility rule.
-- The September 2026 quarter uses preliminary company asset-gain/tax estimates plus modeled other income. It is not reported GAAP earnings.
-- Three bootstrap regimes (resampled blocks of historical BTC daily returns: `demeaned` with zero drift, `raw` full history, `recent` last four years), preferred-burden sensitivities, price thresholds and simplified corporate alternative minimum tax (CAMT) scenarios rebuild locally. CAMT outputs distinguish the current fair value item (FVI) exclusion option in IRS Notice 2025-49 from counterfactual no-exclusion cases.
+
+### Model error
+
+![Model minus reported net income for six quarters, Q1 2025 to Q2 2026; the mean absolute error is $326.77m.](docs/assets/backtest.svg)
+
+The price model missed reported net income by **$326.77 million** on average over six quarters (`results/backtest.json`). This is a model limit, not a code bug. With the filing's own BTC price, the modelled bitcoin gain matches the reported gain within $1 million in every quarter (`tests/test_model.py`). Q1 and Q2 2026 carry 74% of the total absolute error ($1,445.6m of $1,960.6m), for two reasons:
+
+- **Price time.** Strategy values bitcoin at the Coinbase price at 4:00 p.m. Eastern Time on quarter end (June 2026 10-Q). The model uses the Coinbase daily close at midnight UTC, 3 to 4 hours later, because its scenarios simulate daily closes. On March 31, 2026 that close was $68,221.85 against the filing's $67,772.92 (`results/quarterly_history.csv`). The gap raises Q1 2026 and lowers Q2 2026, which opens at that price. With filing prices, mean error falls to $121.28m (`results/backtest.json`, `filing`).
+- **Tax allowance.** When bitcoin fell below cost in Q1 2026, Strategy put a full valuation allowance on its domestic net deferred tax assets. The model reverses the $2,417.69m bitcoin tax liability (filing-price run; the 10-Q says "$2.42 billion"), but the reported benefit was $1,922.81m (`results/backtest.json`). Other deferred tax assets had offset part of that liability: the reported net liability at December 31, 2025 was $1,926.45m (XBRL `DeferredIncomeTaxLiabilitiesNet`, accession 0001050446-26-000044). The allowance stopped counting them. The model tracks only the bitcoin item, so it overstates that quarter's benefit by about $491m.
+
+Per quarter, USD millions, model minus reported (`results/earnings_diagnostics.json`; "Rest" is error minus BTC and tax parts):
+
+| Quarter | Error | BTC price | Tax | Rest |
+| --- | ---: | ---: | ---: | ---: |
+| 2025-03-31 | +24.8 | +64.5 | -47.5 | +7.8 |
+| 2025-06-30 | -323.3 | -392.9 | +63.6 | +6.0 |
+| 2025-09-30 | +53.9 | +146.7 | -73.3 | -19.5 |
+| 2025-12-31 | +112.9 | +187.2 | -70.4 | -3.8 |
+| 2026-03-31 | +824.7 | +353.8 | +491.5 | -20.6 |
+| 2026-06-30 | -620.9 | -503.0 | +1.6 | -119.5 |
+
+`tests/test_diagnostics.py` checks the 74% share, the $121.28m filing-price error and the tax-allowance arithmetic. [Earnings diagnostics](docs/earnings-diagnostics.md) has the full component bridge.
+
+### Scenarios
+
+- Q3 2026 uses Strategy's preliminary 8-K gain and tax estimates plus modelled other income. It is not reported GAAP earnings.
+- Price scenarios resample blocks of historical BTC daily returns in three regimes: `demeaned` (zero drift), `raw` (full history) and `recent` (last four years). Simplified corporate alternative minimum tax (CAMT) scenarios separate the fair value item (FVI) exclusion in IRS Notice 2025-49 from no-exclusion cases.
 
 ## How it works
 
@@ -39,7 +69,7 @@ python3 -m venv .venv
 .venv/bin/python scripts/render_result.py
 ```
 
-Observed: **42 tests** (41 pass and the README-block check skips until `run_model.py` has written `results/`; all 42 pass on a rerun). `render_result.py` also rewrites the generated threshold lines in this README from `results/`. Package installation needs network access; source restoration/tests/demo are offline and need no credentials. Generated CSV/JSON stay local. A second run reproduces their hashes with the pinned NumPy version and seed. Optional source fetching needs contact-bearing `SEC_USER_AGENT` for EDGAR.
+Observed: **43 tests**. Before `run_model.py` has written `results/`, 42 pass and the README-block check skips; on a rerun all 43 pass. `render_result.py` rewrites the generated threshold lines in this README from `results/`. Installing packages needs network access. Restoring sources, tests and the demo run offline with no credentials. A second run reproduces the output hashes with the pinned NumPy version and seed. Optional source fetching needs a contact-bearing `SEC_USER_AGENT` for EDGAR.
 
 ## Repository layout
 
@@ -53,9 +83,8 @@ Observed: **42 tests** (41 pass and the README-block check skips until `run_mode
 ## Documentation
 
 - [Public design system](DESIGN.md): Rahil Design 3.3.0, shared tokens and visual review rules.
-
 - [Scope and acceptance](docs/spec.md): local v1 contract.
-- [Earnings diagnostics](docs/earnings-diagnostics.md): signed component error bridge, chronological baseline comparisons and a five-minute example. Run `python scripts/diagnose_earnings.py`.
+- [Earnings diagnostics](docs/earnings-diagnostics.md): per-quarter error bridge, baseline comparisons and a five-minute example. Run `python scripts/diagnose_earnings.py`.
 - [Methodology](docs/methodology.md): bridges, backtests and conditional scenarios.
 - [CAMT research](docs/camt.md): AFSI exclusions, thresholds and omitted tax details.
 - [Sources](docs/sources.md): primary-source checks and cache coverage.
@@ -65,17 +94,18 @@ Observed: **42 tests** (41 pass and the README-block check skips until `run_mode
 
 ## Sources
 
-The snapshot contains 65 attributed response bodies: SEC filings/XBRL, Coinbase candles from July 2015 through October 20, 2026, and IRS/regulatory material. The July 2026 S&P methodology was checked in the browser; direct PDF download returned 403, so that PDF is not in the snapshot. Its earnings wording was rechecked on 2026-10-22 against the Internet Archive copy linked in Results. See [source notes](docs/sources.md) and `provenance/`.
+The snapshot contains 65 attributed response bodies: SEC filings/XBRL, Coinbase candles from July 2015 through October 20, 2026, and IRS/regulatory material. The July 2026 S&P methodology was checked in the browser; direct PDF download returned 403, so that PDF is not in the snapshot. Its earnings wording was rechecked on 2026-10-22 against the Internet Archive copy linked in Results. Strategy's 4:00 p.m. ET pricing and the $2.42 billion tax reversal are quoted from the June 2026 10-Q in the snapshot. See [source notes](docs/sources.md) and `provenance/`.
 
 ## Scope and limits
 
 - Independent research; no affiliation with Strategy or S&P. No investment or tax-return functionality.
-- Only an earnings condition is modeled; other eligibility criteria and committee selection are excluded.
-- Scenario frequencies depend on fixed holdings/cost, no future sales, assumed other income, tax proxy and return regime. No calibrated future-probability claim.
-- AFSI is not GAAP earnings. Current guidance permits qualifying FVI exclusions subject to requirements. Simplified `camt` keys assume zero regular tax/credits and mean tentative-tax sensitivity, not actual liability or tax on every unrealized gain.
-- The result table is generated from the backtest. Older partial figures are excluded.
-- Optional source refresh is a new sample: it does not update curated facts or IRS guidance, and will fail the frozen-source checks. Keep it separate from reproduction.
-- The October 28 daily-dividend proposal was pending at the snapshot; this model does not assume enactment.
+- Only the earnings condition is modelled. Market cap, liquidity, float, sector balance and the Index Committee's discretion are not.
+- Scenario pass frequencies are conditional on fixed holdings and cost, no future sales, assumed other income, the tax proxy and the return regime. They are not index-selection probabilities.
+- The tax proxy tracks only the bitcoin deferred tax item. It misses valuation-allowance effects on other deferred tax assets (about $491m in Q1 2026, see Model error).
+- Six quarters cannot show stable future accuracy. Scored holdings, costs and the tax calibration come from filings, not as-filed forecasts.
+- AFSI is not GAAP earnings. Simplified `camt` keys assume zero regular tax and credits and give tentative-tax sensitivity, not actual liability.
+- Optional source refresh is a new sample. It does not update curated facts or IRS guidance and will fail the frozen-source checks.
+- The October 28 daily-dividend proposal was pending at the snapshot; the model does not assume it passes.
 
 ## License
 

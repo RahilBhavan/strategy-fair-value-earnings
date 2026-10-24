@@ -46,6 +46,20 @@ class DiagnosticTests(unittest.TestCase):
         self.assertAlmostEqual(self.report['baseline_metrics']['production']['mae_usd'],
                                326767589.53013366, places=2)
 
+    def test_largest_errors_trace_to_price_time_and_tax_allowance(self):
+        rows = {r['quarter_end']: r for r in self.report['quarters']}
+        q1, q2 = rows[date(2026, 3, 31)], rows[date(2026, 6, 30)]
+        total = sum(abs(r['ni_error']) for r in rows.values())
+        self.assertGreater((abs(q1['ni_error']) + abs(q2['ni_error'])) / total, .73)
+        _, filing = earnings.backtest('filing')
+        filing_mae = sum(abs(r['pred'].net_income - r['reported_ni']) for r in filing if not r['estimate']) / 6
+        self.assertAlmostEqual(filing_mae / 1e6, 121.28, places=2)
+        f1 = next(r for r in filing if r['quarter_end'] == date(2026, 3, 31))
+        reversal = -f1['pred'].tax
+        self.assertAlmostEqual(reversal / 1e9, 2.42, places=2)  # June 2026 10-Q: "$2.42 billion"
+        net_dtl = xbrl.instants(xbrl.load(), 'DeferredIncomeTaxLiabilitiesNet')[date(2025, 12, 31)]['val']
+        self.assertLess(abs((f1['reported_tax'] - f1['pred'].tax) - (reversal - net_dtl)), 5_000_000)
+
     def test_chronology_and_unsorted_input(self):
         d1, d2, d3 = date(2025, 3, 31), date(2025, 6, 30), date(2025, 9, 30)
         self.assertEqual(diagnostics.prior_median({d3: 999, d2: 20, d1: 10}, d3), 15)

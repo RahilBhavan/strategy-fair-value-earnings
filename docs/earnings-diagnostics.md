@@ -50,9 +50,14 @@ $7.105m net interest, $23.628m other nonoperating and $2.887m allocation gap.
 They **do not sum to NI MAE**: signs offset within each quarter. For example,
 Q1 2026's +$824.740m NI error includes +$353.792m BTC and +$491.535m tax;
 Q2 2026's -$620.869m includes -$502.964m BTC and -$116.327m other nonoperating.
-BTC error reflects the venue/measurement-price reconstruction against reported
-gain, not an inferred operational loss. The filing-price bridge already
-reconciles gains; this does not establish NI accuracy.
+BTC error is a price-time difference, not an operational loss: Strategy values
+bitcoin at the Coinbase price at 4:00 p.m. ET on quarter end (June 2026 10-Q),
+while the model uses the midnight-UTC daily close. The filing-price bridge
+reconciles gains; this does not establish NI accuracy. The Q1 2026 tax error is
+the full valuation allowance absorbing other deferred tax assets that had offset
+the bitcoin liability: the modelled $2,417.69m reversal (filing-price run) less
+the reported $1,926.454m net deferred tax liability at December 31, 2025 is
+$491.24m. `test_largest_errors_trace_to_price_time_and_tax_allowance` pins both.
 
 ## Fixed comparator results
 
