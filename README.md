@@ -69,7 +69,7 @@ python3 -m venv .venv
 .venv/bin/python scripts/render_result.py
 ```
 
-Observed: **43 tests**. Before `run_model.py` has written `results/`, 42 pass and the README-block check skips; on a rerun all 43 pass. `render_result.py` rewrites the generated threshold lines in this README from `results/`. Installing packages needs network access. Restoring sources, tests and the demo run offline with no credentials. A second run reproduces the output hashes with the pinned NumPy version and seed. Optional source fetching needs a contact-bearing `SEC_USER_AGENT` for EDGAR.
+Observed: **43 tests pass**, none skipped (on a fresh clone the README-block test runs `scripts/run_model.py` itself). `render_result.py` rewrites the generated threshold lines in this README from `results/`. Installing packages needs network access. Restoring sources, tests and the demo run offline with no credentials. A second run reproduces the output hashes with the pinned NumPy version and seed. Optional source fetching needs a contact-bearing `SEC_USER_AGENT` for EDGAR.
 
 ## Repository layout
 
