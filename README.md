@@ -26,23 +26,7 @@ A local Python model of Strategy's earnings under bitcoin fair-value accounting.
 
 ![Model minus reported net income for six quarters, Q1 2025 to Q2 2026; the mean absolute error is $326.77m.](docs/assets/backtest.svg)
 
-The price model missed reported net income by **$326.77 million** on average over six quarters (`results/backtest.json`). This is a model limit, not a code bug. With the filing's own BTC price, the modelled bitcoin gain matches the reported gain within $1 million in every quarter (`tests/test_model.py`). Q1 and Q2 2026 carry 74% of the total absolute error ($1,445.6m of $1,960.6m), for two reasons:
-
-- **Price time.** Strategy values bitcoin at the Coinbase price at 4:00 p.m. Eastern Time on quarter end (June 2026 10-Q). The model uses the Coinbase daily close at midnight UTC, 3 to 4 hours later, because its scenarios simulate daily closes. On March 31, 2026 that close was $68,221.85 against the filing's $67,772.92 (`results/quarterly_history.csv`). The gap raises Q1 2026 and lowers Q2 2026, which opens at that price. With filing prices, mean error falls to $121.28m (`results/backtest.json`, `filing`).
-- **Tax allowance.** When bitcoin fell below cost in Q1 2026, Strategy put a full valuation allowance on its domestic net deferred tax assets. The model reverses the $2,417.69m bitcoin tax liability (filing-price run; the 10-Q says "$2.42 billion"), but the reported benefit was $1,922.81m (`results/backtest.json`). Other deferred tax assets had offset part of that liability: the reported net liability at December 31, 2025 was $1,926.45m (XBRL `DeferredIncomeTaxLiabilitiesNet`, accession 0001050446-26-000044). The allowance stopped counting them. The model tracks only the bitcoin item, so it overstates that quarter's benefit by about $491m.
-
-Per quarter, USD millions, model minus reported (`results/earnings_diagnostics.json`; "Rest" is error minus BTC and tax parts):
-
-| Quarter | Error | BTC price | Tax | Rest |
-| --- | ---: | ---: | ---: | ---: |
-| 2025-03-31 | +24.8 | +64.5 | -47.5 | +7.8 |
-| 2025-06-30 | -323.3 | -392.9 | +63.6 | +6.0 |
-| 2025-09-30 | +53.9 | +146.7 | -73.3 | -19.5 |
-| 2025-12-31 | +112.9 | +187.2 | -70.4 | -3.8 |
-| 2026-03-31 | +824.7 | +353.8 | +491.5 | -20.6 |
-| 2026-06-30 | -620.9 | -503.0 | +1.6 | -119.5 |
-
-`tests/test_diagnostics.py` checks the 74% share, the $121.28m filing-price error and the tax-allowance arithmetic. [Earnings diagnostics](docs/earnings-diagnostics.md) has the full component bridge.
+The price model missed reported net income by **$326.77 million** on average over six quarters (`results/backtest.json`). This is a model limit, not a code bug. With the filing's own BTC price, the modelled bitcoin gain matches the reported gain within $1 million in every quarter (`tests/test_model.py`). Q1 and Q2 2026 carry 74% of the total absolute error ($1,445.6m of $1,960.6m). With the filing's own BTC price, the mean error falls to $121.28m (`results/backtest.json`). The two causes are the price time (the model uses the midnight-UTC close, not the filing's 4:00 p.m. ET price) and a Q1 2026 tax valuation allowance the model does not track. The per-quarter bridge and both explanations are in [Earnings diagnostics](docs/earnings-diagnostics.md#why-the-model-missed-by-quarter).
 
 ### Scenarios
 
@@ -55,7 +39,7 @@ Per quarter, USD millions, model minus reported (`results/earnings_diagnostics.j
 
 ## Run it
 
-Python 3.12+ and NumPy 2.3.4; tested with Python 3.14.7. From this repository:
+CI installs Python 3.12.12 and 3.14.0 with NumPy 2.3.4 (`.github/workflows/ci.yml`). The last local run used Python 3.14.7. From this repository:
 
 ```bash
 git clone https://github.com/RahilBhavan/strategy-fair-value-earnings.git
@@ -69,7 +53,7 @@ python3 -m venv .venv
 .venv/bin/python scripts/render_result.py
 ```
 
-Observed: **43 tests**. Before `run_model.py` has written `results/`, 42 pass and the README-block check skips; on a rerun all 43 pass. `render_result.py` rewrites the generated threshold lines in this README from `results/`. Installing packages needs network access. Restoring sources, tests and the demo run offline with no credentials. A second run reproduces the output hashes with the pinned NumPy version and seed. Optional source fetching needs a contact-bearing `SEC_USER_AGENT` for EDGAR.
+Observed: **43 tests pass**, none skipped (on a fresh clone the README-block test runs `scripts/run_model.py` itself). `render_result.py` rewrites the generated threshold lines in this README from `results/`. Installing packages needs network access. Restoring sources, tests and the demo run offline with no credentials. A second run reproduces the output hashes with the pinned NumPy version and seed. Optional source fetching needs a contact-bearing `SEC_USER_AGENT` for EDGAR.
 
 ## Repository layout
 

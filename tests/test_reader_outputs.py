@@ -32,7 +32,7 @@ class ReaderOutputTests(unittest.TestCase):
 
     def test_readme_block_matches_results(self):
         if not (ROOT / 'results/thresholds.json').exists():
-            self.skipTest('run scripts/run_model.py first')
+            subprocess.run([sys.executable, 'scripts/run_model.py'], cwd=ROOT, check=True, capture_output=True)
         thr = json.loads((ROOT / 'results/thresholds.json').read_text())
         self.assertNotIn('june_2027_march_price_needed_given_december', thr)
         self.assertIn('by_december_31_2026_close', thr['march_2027_close_needed_for_june_2027_checkpoint'])
