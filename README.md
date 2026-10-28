@@ -89,7 +89,7 @@ The snapshot contains 65 attributed response bodies: SEC filings/XBRL, Coinbase 
 - Six quarters cannot show stable future accuracy. Scored holdings, costs and the tax calibration come from filings, not as-filed forecasts.
 - AFSI is not GAAP earnings. Simplified `camt` keys assume zero regular tax and credits and give tentative-tax sensitivity, not actual liability.
 - Optional source refresh is a new sample. It does not update curated facts or IRS guidance and will fail the frozen-source checks.
-- The October 28 daily-dividend proposal was pending at the snapshot; the model does not assume it passes.
+- The October 28 daily-dividend proposal was pending at the snapshot; the model does not assume it passes. Update, October 28, 2026: Strategy's [8-K filed October 28](https://www.sec.gov/Archives/edgar/data/1050446/000119312526435451/mstr-20261028.htm) (accession 0001193125-26-435451, Item 8.01) reports that, based on preliminary voting results, the requisite vote was obtained to adopt the amended certificates of designations permitting daily dividends, subject to their filing and effectiveness (STRC from November 1, 2026; STRF, STRK and STRD from January 1, 2027). This repository's snapshot, outputs and defaults stay frozen at October 21 and are not recomputed.
 
 ## License
 
